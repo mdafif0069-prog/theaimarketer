@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Sparkles, ShieldCheck, Play } from 'lucide-react';
 import { useApp } from '../context/AppProviders.jsx';
+import { useI18n } from '../context/LanguageContext.jsx';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.jsx';
 
 export default function Login() {
   const { login } = useApp();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
@@ -61,7 +64,10 @@ export default function Login() {
       </div>
 
       {/* Form panel */}
-      <div className="flex items-center justify-center px-6 py-12">
+      <div className="relative flex items-center justify-center px-6 py-12">
+        <div className="absolute end-6 top-6">
+          <LanguageSwitcher />
+        </div>
         <div className="w-full max-w-sm animate-fade-in">
           <div className="mb-8 lg:hidden">
             <Link to="/" className="flex items-center gap-2">
@@ -75,7 +81,7 @@ export default function Login() {
           </div>
 
           <h2 className="font-display text-2xl font-bold">
-            {mode === 'signin' ? 'Welcome back' : 'Create your account'}
+            {mode === 'signin' ? t('auth.welcomeBack') : t('auth.createAccount')}
           </h2>
           <p className="mt-1 text-sm text-noor-muted">
             {mode === 'signin' ? 'Sign in to continue watching.' : 'Start streaming in seconds.'}

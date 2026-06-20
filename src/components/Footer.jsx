@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Globe } from 'lucide-react';
+import { useI18n } from '../context/LanguageContext.jsx';
+import { LanguageSwitcher } from './LanguageSwitcher.jsx';
 
 export function Footer() {
+  const { t } = useI18n();
   return (
     <footer className="mt-16 border-t border-white/10 bg-noor-bg/60">
       <div className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10">
@@ -16,22 +18,17 @@ export function Footer() {
                 Noor<span className="noor-text-gradient">Stream</span>
               </span>
             </div>
-            <p className="mt-3 max-w-xs text-sm text-noor-muted">
-              Halal, family-safe streaming. Press play without worry.
-            </p>
+            <p className="mt-3 max-w-xs text-sm text-noor-muted">{t('footer.tagline')}</p>
           </div>
 
-          <FooterCol title="Explore" links={[['Home', '/'], ['Browse', '/browse'], ['Kids', '/browse/kids'], ['Plans', '/plans']]} />
-          <FooterCol title="Company" links={[['About', '/'], ['Content standard', '/'], ['Careers', '/'], ['Contact', '/']]} />
-          <FooterCol title="Legal" links={[['Privacy', '/'], ['Terms', '/'], ['Parental controls', '/settings'], ['Accessibility', '/']]} />
+          <FooterCol title={t('footer.explore')} links={[[t('nav.home'), '/'], [t('nav.browse'), '/browse'], [t('nav.kids'), '/browse/kids'], [t('nav.plans'), '/plans']]} />
+          <FooterCol title={t('footer.company')} links={[['About', '/'], ['Content standard', '/'], ['Careers', '/'], ['Contact', '/']]} />
+          <FooterCol title={t('footer.legal')} links={[['Privacy', '/'], ['Terms', '/'], [t('nav.settings'), '/settings'], ['Accessibility', '/']]} />
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-sm text-noor-muted sm:flex-row">
-          <p>© {new Date().getFullYear()} NoorStream. All rights reserved.</p>
-          <button className="flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 hover:text-noor-text">
-            <Globe className="h-4 w-4" />
-            English (EN)
-          </button>
+          <p>© {new Date().getFullYear()} NoorStream. {t('footer.rights')}</p>
+          <LanguageSwitcher />
         </div>
       </div>
     </footer>

@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { AskProvider } from './context/AskContext.jsx';
 import { RequireAuth, RequireProfile } from './components/guards.jsx';
 
+const Landing = lazy(() => import('./pages/Landing.jsx'));
 const Home = lazy(() => import('./pages/Home.jsx'));
 const Browse = lazy(() => import('./pages/Browse.jsx'));
 const Detail = lazy(() => import('./pages/Detail.jsx'));
@@ -31,6 +32,9 @@ export default function App() {
       <AskProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            {/* Public marketing landing (no app chrome) */}
+            <Route path="/welcome" element={<Landing />} />
+
             {/* Auth + profile selection (no app chrome) */}
             <Route path="/login" element={<Login />} />
             <Route

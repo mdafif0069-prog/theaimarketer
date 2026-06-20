@@ -4,6 +4,8 @@ import { Search, Sparkles, Menu, X, LogOut, UserCog, Settings } from 'lucide-rea
 import { cx } from '../lib/utils.js';
 import { useApp } from '../context/AppProviders.jsx';
 import { useAsk } from '../context/AskContext.jsx';
+import { useI18n } from '../context/LanguageContext.jsx';
+import { LanguageSwitcher } from './LanguageSwitcher.jsx';
 
 function Logo() {
   return (
@@ -19,9 +21,9 @@ function Logo() {
 }
 
 const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/browse', label: 'Browse' },
-  { to: '/browse/kids', label: 'Kids' },
+  { to: '/', key: 'nav.home', end: true },
+  { to: '/browse', key: 'nav.browse' },
+  { to: '/browse/kids', key: 'nav.kids' },
 ];
 
 export function Navbar() {
@@ -29,6 +31,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout, activeProfile } = useApp();
   const { openAsk } = useAsk();
+  const { t } = useI18n();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export function Navbar() {
                 )
               }
             >
-              {n.label}
+              {t(n.key)}
             </NavLink>
           ))}
         </nav>
@@ -72,7 +75,7 @@ export function Navbar() {
             className="hidden items-center gap-2 rounded-full bg-ai-accent px-3.5 py-2 text-sm font-semibold text-white shadow-[0_0_20px_-4px_rgba(91,108,255,0.6)] transition-transform hover:scale-105 sm:flex"
           >
             <Sparkles className="h-4 w-4" />
-            Ask NoorStream
+            {t('nav.ask')}
           </button>
           <button
             onClick={openAsk}
@@ -114,13 +117,13 @@ export function Navbar() {
                     <p className="truncate text-xs text-noor-muted">{user?.email || 'Not signed in'}</p>
                   </div>
                   <MenuItem onClick={() => { setMenuOpen(false); navigate('/profiles'); }} icon={UserCog}>
-                    Switch profile
+                    {t('nav.switchProfile')}
                   </MenuItem>
                   <MenuItem onClick={() => { setMenuOpen(false); navigate('/settings'); }} icon={Settings}>
-                    Settings
+                    {t('nav.settings')}
                   </MenuItem>
-                  <MenuItem onClick={() => { setMenuOpen(false); logout(); navigate('/login'); }} icon={LogOut}>
-                    Sign out
+                  <MenuItem onClick={() => { setMenuOpen(false); logout(); navigate('/welcome'); }} icon={LogOut}>
+                    {t('nav.signOut')}
                   </MenuItem>
                 </div>
               </>
@@ -148,6 +151,7 @@ function MenuItem({ icon: Icon, children, onClick }) {
 
 function MobileNav() {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
   return (
     <>
       <button
@@ -180,12 +184,15 @@ function MobileNav() {
                     )
                   }
                 >
-                  {n.label}
+                  {t(n.key)}
                 </NavLink>
               ))}
               <NavLink to="/plans" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2.5 text-base font-medium text-noor-muted">
-                Plans
+                {t('nav.plans')}
               </NavLink>
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <LanguageSwitcher />
+              </div>
             </nav>
           </div>
         </div>

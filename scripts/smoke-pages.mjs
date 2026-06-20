@@ -15,6 +15,7 @@ const { AppProviders } = await import('../src/context/AppProviders.jsx');
 const { AskProvider } = await import('../src/context/AskContext.jsx');
 
 const pages = {
+  Landing: ['../src/pages/Landing.jsx', '/welcome'],
   Home: ['../src/pages/Home.jsx', '/'],
   Browse: ['../src/pages/Browse.jsx', '/browse'],
   BrowseKids: ['../src/pages/Browse.jsx', '/browse/kids', '/browse/:category'],

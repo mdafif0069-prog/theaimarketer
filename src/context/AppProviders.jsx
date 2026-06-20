@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ToastProvider } from './ToastContext.jsx';
+import { LanguageProvider } from './LanguageContext.jsx';
 
 /* ------------------------------------------------------------------ */
 /* Persistence helper                                                  */
@@ -135,7 +136,9 @@ export function AppProviders({ children }) {
 
   return (
     <AppContext.Provider value={value}>
-      <ToastProvider>{children}</ToastProvider>
+      <LanguageProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </LanguageProvider>
     </AppContext.Provider>
   );
 }

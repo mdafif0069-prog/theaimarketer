@@ -6,7 +6,7 @@ import { useApp } from '../context/AppProviders.jsx';
 export function RequireAuth({ children }) {
   const { user } = useApp();
   const location = useLocation();
-  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  if (!user) return <Navigate to="/welcome" replace state={{ from: location }} />;
   return children;
 }
 
@@ -14,7 +14,7 @@ export function RequireAuth({ children }) {
 export function RequireProfile({ children }) {
   const { user, activeProfile } = useApp();
   const location = useLocation();
-  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  if (!user) return <Navigate to="/welcome" replace state={{ from: location }} />;
   if (!activeProfile) return <Navigate to="/profiles" replace state={{ from: location }} />;
   return children;
 }
