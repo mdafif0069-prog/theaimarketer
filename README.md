@@ -1,31 +1,30 @@
 # NoorStream 🌙
 
-> **Halal, family-safe video streaming.** Press play without worry.
+> **The verified Islamic content platform.** Scholar-verified. Halal-only.
 
-NoorStream is a "halal Netflix" — a curated streaming platform for Islamic and
-family-friendly video content (lectures, documentaries, series, kids' shows, Quran
-& tafsir, nasheeds, family movies). Every title is reviewed against a transparent
-content-suitability standard, and an AI assistant ("Ask NoorStream") helps you
-find the perfect thing to watch — always scoped to the curated catalog.
+NoorStream is a **mobile-first** Islamic content app: a vertical, TikTok-style feed
+of **scholar-verified** reels, an **AI Q&A** that answers with Quran & Hadith
+references (madhab-aware, English/عربي), rich **scholar profiles** with courses, and
+a personalised onboarding flow. The frontend runs entirely on mock data so it works
+with no backend.
 
-This repository contains the **product documentation** and a fully interactive
-**React frontend** (running against a typed mock API, so it works with no backend).
+> **Design note:** This is a "new-generation" visual design — deep-midnight canvas
+> with an **emerald → gold "Noor" (light)** gradient system and a **violet AI accent**,
+> glassmorphism, animated aurora, and modern type (Sora / Inter / Amiri for Arabic).
 
 ---
 
-## ✨ Highlights
+## ✨ Screens
 
-- **Cinematic, AI-flavored UI** — deep "night" canvas with a warm gold→emerald
-  "Noor" (light) palette, gradient posters, glow effects, and smooth motion.
-- **Ask NoorStream** — a conversational, catalog-scoped AI discovery drawer.
-- **For You** AI recommendation row + curated themed rows.
-- **Kids Mode** with a real parental-PIN gate to switch out (defense in depth).
-- **Custom video player** — seek, volume, speed, captions, fullscreen, resume,
-  keyboard shortcuts.
-- **Search** with instant results, filters, and graceful empty states.
-- **Profiles, Watchlist, Continue Watching** — all persisted locally.
-- **Accessible & responsive** — keyboard nav, focus rings, reduced-motion support,
-  mobile → desktop layouts.
+- **Onboarding** — Interests → Madhab → Language → Notifications → personalised summary
+- **Feed** — vertical swipeable scholar reels (For You / Following), like / save / share,
+  mute, segment progress; swipe, scroll-wheel, and arrow-key navigation
+- **Ask AI** — Islamic Q&A chat: madhab selector, EN/عر toggle, dua cards (Arabic +
+  transliteration + meaning), cited references, "ask a verified scholar" CTA
+- **Scholar profile** — cover, verified badge, follow/notify, stats, badges, and
+  About / Videos / Courses (enrol) / Reviews tabs
+- **Search** — trending topics + top scholars
+- **My Profile** — saved, history, courses, AI history, settings, restart demo
 
 ---
 
@@ -33,31 +32,27 @@ This repository contains the **product documentation** and a fully interactive
 
 ```bash
 npm install      # install dependencies
-npm run dev      # start the dev server (http://localhost:5173)
+npm run dev      # start dev server (http://localhost:5173)
 npm run build    # production build
 npm run preview  # preview the production build
 npm run lint     # run ESLint
 ```
 
-### Demo credentials
-- **Sign in:** any valid email + any 6+ character password.
-- **Parental PIN (to exit Kids Mode):** `1379`
+On desktop the app renders inside a centered phone frame with an ambient aurora; on
+phones it's full-bleed. First load starts at onboarding — finish it to enter the app
+(restart anytime from **Profile ▸ Restart onboarding demo**).
 
 ---
 
 ## 🧪 Verification
 
-The app was validated with:
+- `npm run build` — compiles & code-splits cleanly
+- `npm run lint` — clean
+- `npx vite-node scripts/smoke-pages.mjs` — renders every screen through React's
+  server renderer to catch render-time crashes
 
-- `npm run build` — all modules compile and tree-split correctly.
-- `npm run lint` — clean.
-- `scripts/smoke.mjs` & `scripts/smoke-pages.mjs` — render every route/page through
-  React's server renderer to catch render-time crashes
-  (`npx vite-node scripts/smoke-pages.mjs`).
-
-> A headless browser wasn't available in the build environment (binary download is
-> blocked by the network policy), so interactive testing was done via the render
-> smoke tests + manual code review rather than a live click-through.
+> A headless browser isn't available in this environment (binary download blocked by
+> network policy), so verification uses render smoke tests + code review.
 
 ---
 
@@ -66,19 +61,17 @@ The app was validated with:
 - **React 18** + **Vite 5** + **React Router 6**
 - **Tailwind CSS 3** with custom design tokens (`tailwind.config.js`)
 - **lucide-react** icons
-- Typed **mock API layer** (`src/api/client.js`) mirroring the real backend
-  contract — swap in a real backend without touching the UI.
+- App state via a single `AppContext` (onboarding prefs, follows, saves) persisted to
+  `localStorage`; mock content in `src/data/content.js`
 
 ```
 src/
-  api/         mock API client (drop-in for real backend)
-  components/  reusable UI (Navbar, Hero, ContentCard/Row, Player parts, AskNoorStream…)
-  context/     Auth/Profile/Watchlist/Progress, Toast, Ask drawer
-  data/        mock catalog fixtures
-  hooks/       useAsync data hook
-  lib/         utils & formatters
-  pages/       Home, Browse, Detail, Search, Player, Profiles, Login, Settings, Plans
-  styles/      Tailwind entry + globals
+  components/  DeviceFrame, BottomNav, MainLayout, ErrorBoundary, ui atoms
+  context/     AppContext (onboarding, follows, saves, preferences)
+  data/        content.js (interests, madhabs, scholars, reels, AI knowledge)
+  lib/         icons + utils
+  pages/       Onboarding, Feed, AskAI, Search, ScholarProfile, MyProfile
+  styles/      Tailwind entry + globals (aurora, glass, gradients)
 ```
 
 ---
@@ -87,46 +80,14 @@ src/
 
 This repo is preconfigured for Netlify (`netlify.toml` + SPA redirects).
 
-**Easiest — connect the repo (continuous deploy):**
-1. Go to [app.netlify.com](https://app.netlify.com) → **Add new site ▸ Import an existing project**.
-2. Connect GitHub and pick `theaimarketer`; choose the branch you want to deploy.
-3. Netlify auto-detects the settings from `netlify.toml` (build: `npm run build`,
-   publish: `dist`). Click **Deploy**. You'll get a live URL.
+1. [app.netlify.com](https://app.netlify.com) → **Add new site ▸ Import an existing project** → GitHub → `theaimarketer`.
+2. Pick the branch; Netlify auto-detects settings (build `npm run build`, publish `dist`). **Deploy.**
 
-**Or — drag & drop (no Git connection):**
-```bash
-npm install && npm run build   # produces dist/
-```
-Then drag the `dist/` folder onto [app.netlify.com/drop](https://app.netlify.com/drop).
-
-**Or — Netlify CLI:**
-```bash
-npm i -g netlify-cli
-netlify deploy --build --prod
-```
-
-> The included SPA fallback ensures deep links (e.g. `/browse`, `/title/...`) work
-> on direct load and refresh.
+Or drag the built `dist/` folder onto [app.netlify.com/drop](https://app.netlify.com/drop), or use `npx netlify deploy --build --prod`.
 
 ---
 
-## 📚 Documentation
+## 📚 Product documentation
 
-See [`/docs`](./docs):
-
-1. [Product Requirements](./docs/01_NoorStream_Product_Requirements.md)
-2. [Technical Architecture](./docs/02_NoorStream_Technical_Architecture.md)
-3. [Security & Access](./docs/03_NoorStream_Security_and_Access.md)
-4. [Frontend Specification](./docs/04_NoorStream_Frontend_Specification.md)
-5. [Feature Ticket List](./docs/05_NoorStream_Feature_Ticket_List.md)
-
----
-
-## 🔮 Notes & next steps
-
-The frontend is intentionally backend-free for this milestone. To go live, replace
-`src/api/client.js` with calls to the real services described in the architecture
-doc (auth/JWT, catalog, playback entitlement, catalog-scoped LLM for "Ask
-NoorStream"), and wire up HLS playback + billing. See the
-[Feature Ticket List](./docs/05_NoorStream_Feature_Ticket_List.md) for the
-prioritized backlog.
+The `/docs` folder currently describes an earlier "halal-Netflix" concept and is being
+revised to match this verified-content-platform direction.

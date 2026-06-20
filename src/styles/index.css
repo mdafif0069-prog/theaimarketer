@@ -14,95 +14,61 @@ body,
 
 body {
   margin: 0;
-  background-color: #0b1020;
-  color: #f4f6fb;
+  background: #04060c;
+  color: #eef2fb;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle ambient background glow for the whole app */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(60rem 40rem at 80% -10%, rgba(245, 196, 81, 0.08), transparent 60%),
-    radial-gradient(50rem 40rem at -10% 20%, rgba(31, 181, 143, 0.1), transparent 60%),
-    radial-gradient(40rem 30rem at 50% 120%, rgba(91, 108, 255, 0.08), transparent 60%);
-  pointer-events: none;
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 @layer components {
-  .noor-text-gradient {
-    @apply bg-noor-glow bg-clip-text text-transparent;
+  .noor-gradient-text {
+    @apply bg-noor bg-clip-text text-transparent;
+  }
+  .ai-gradient-text {
+    @apply bg-ai bg-clip-text text-transparent;
   }
 
+  /* Frosted glass surface */
   .glass {
-    @apply bg-noor-surface/70 backdrop-blur-xl border border-white/5;
+    @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  }
+  .glass-strong {
+    @apply border border-white/10 bg-ink-700/80 backdrop-blur-2xl;
   }
 
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-noor-glow px-5 py-2.5
-      font-semibold text-noor-bg transition-transform duration-200 hover:scale-[1.03]
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-noor-gold/70 active:scale-95;
+  .btn-noor {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-noor px-5 py-3.5 font-semibold text-ink
+      shadow-glow transition-transform duration-200 active:scale-[0.97]
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald2/60 disabled:opacity-40;
   }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5
-      px-5 py-2.5 font-semibold text-noor-text transition-colors duration-200 hover:bg-white/10
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40;
+  .btn-ai {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-ai px-5 py-3.5 font-semibold text-white
+      shadow-glowai transition-transform duration-200 active:scale-[0.97];
+  }
+  .btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5
+      font-semibold text-cloud transition-colors duration-200 hover:bg-white/10 active:scale-[0.97];
   }
 
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1
-      text-sm text-noor-muted transition-colors hover:text-noor-text hover:border-white/25;
+    @apply inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/5
+      px-3.5 py-1.5 text-sm text-cloud-muted transition-colors hover:text-cloud;
+  }
+  .chip-on {
+    @apply border-emerald2/50 bg-emerald2/15 text-emerald2;
   }
 
-  .chip-active {
-    @apply border-noor-gold/60 bg-noor-gold/15 text-noor-gold;
-  }
-
-  .card-surface {
-    @apply rounded-2xl bg-noor-surface border border-white/5 shadow-card;
+  .card {
+    @apply rounded-3xl border border-white/[0.07] bg-ink-700 shadow-soft;
   }
 }
 
-/* Custom range slider (player seek + volume) */
-.noor-range {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 5px;
-  border-radius: 9999px;
-  background: linear-gradient(
-    to right,
-    #f5c451 0%,
-    #1fb58f var(--pct, 0%),
-    rgba(255, 255, 255, 0.25) var(--pct, 0%),
-    rgba(255, 255, 255, 0.25) 100%
-  );
-  cursor: pointer;
-}
-.noor-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 14px;
-  width: 14px;
-  border-radius: 9999px;
-  background: #ffe3a3;
-  box-shadow: 0 0 8px rgba(245, 196, 81, 0.8);
-}
-.noor-range::-moz-range-thumb {
-  height: 14px;
-  width: 14px;
-  border: none;
-  border-radius: 9999px;
-  background: #ffe3a3;
-  box-shadow: 0 0 8px rgba(245, 196, 81, 0.8);
-}
-
-/* Hide scrollbars on horizontal carousels but keep scroll */
+/* Hide scrollbars but keep scroll */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -111,9 +77,9 @@ body::before {
   display: none;
 }
 
-/* Focus visibility baseline */
-:focus-visible {
-  outline: none;
+.arabic {
+  font-family: 'Amiri', serif;
+  direction: rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -123,6 +89,5 @@ body::before {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
   }
 }
