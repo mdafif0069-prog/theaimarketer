@@ -83,6 +83,33 @@ src/
 
 ---
 
+## 🌐 Deploy to Netlify
+
+This repo is preconfigured for Netlify (`netlify.toml` + SPA redirects).
+
+**Easiest — connect the repo (continuous deploy):**
+1. Go to [app.netlify.com](https://app.netlify.com) → **Add new site ▸ Import an existing project**.
+2. Connect GitHub and pick `theaimarketer`; choose the branch you want to deploy.
+3. Netlify auto-detects the settings from `netlify.toml` (build: `npm run build`,
+   publish: `dist`). Click **Deploy**. You'll get a live URL.
+
+**Or — drag & drop (no Git connection):**
+```bash
+npm install && npm run build   # produces dist/
+```
+Then drag the `dist/` folder onto [app.netlify.com/drop](https://app.netlify.com/drop).
+
+**Or — Netlify CLI:**
+```bash
+npm i -g netlify-cli
+netlify deploy --build --prod
+```
+
+> The included SPA fallback ensures deep links (e.g. `/browse`, `/title/...`) work
+> on direct load and refresh.
+
+---
+
 ## 📚 Documentation
 
 See [`/docs`](./docs):
