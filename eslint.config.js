@@ -10,8 +10,9 @@ export default [
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: { ...globals.browser },
+      globals: { ...globals.browser, ...globals.node },
       parserOptions: {
+        ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
       },
@@ -28,11 +29,8 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/prop-types': 'off',
-      // Apostrophes/quotes in copy render fine; escaping them hurts readability.
-      'react/no-unescaped-entities': 'off',
-      // Context files intentionally co-locate their provider + consumer hook.
-      'react-refresh/only-export-components': 'off',
-      'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
 ];

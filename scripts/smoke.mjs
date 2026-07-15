@@ -1,39 +1,52 @@
-// Render-time smoke test: mounts each route through React's server renderer to
-// catch crashes in component render logic (the production build already validates
-// imports/syntax). Effects do not run under renderToString, so this checks the
-// synchronous render path only.
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { MemoryRouter } from 'react-router-dom';
+// Render-smoke test: mount every screen + the composer modal through React's
+// server renderer to catch render-time crashes without a browser.
+// Run: npm run smoke  (uses vite-node so JSX + import.meta.env resolve)
 
-// Minimal browser globals so context initializers that touch storage don't crash.
-globalThis.localStorage = {
-  _d: {},
-  getItem(k) { return this._d[k] ?? null; },
-  setItem(k, v) { this._d[k] = String(v); },
-  removeItem(k) { delete this._d[k]; },
-};
+import { renderToString } from 'react-dom/server';
+import { createElement as h } from 'react';
+import { HubProvider, useHub } from '../src/store.jsx';
+import Sidebar from '../src/components/Sidebar.jsx';
+import ComposerModal from '../src/components/ComposerModal.jsx';
+import Analytics from '../src/screens/Analytics.jsx';
+import Calendar from '../src/screens/Calendar.jsx';
+import Drafts from '../src/screens/Drafts.jsx';
+import Connections from '../src/screens/Connections.jsx';
+import AiAssistant from '../src/screens/AiAssistant.jsx';
+import Team from '../src/screens/Team.jsx';
 
-const { AppProviders } = await import('../src/context/AppProviders.jsx');
-const { default: App } = await import('../src/App.jsx');
+const screens = { Analytics, Calendar, Drafts, Connections, AiAssistant, Team };
 
-const routes = ['/', '/login', '/profiles', '/browse', '/browse/kids',
-  '/title/the-traveler', '/search', '/watch/the-traveler', '/settings', '/plans', '/nope-404'];
+// Force the composer open so it renders in the harness.
+function OpenModal() {
+  const { setState } = useHub();
+  setState({ modalOpen: true });
+  return null;
+}
 
 let failures = 0;
-for (const route of routes) {
+
+for (const [name, Screen] of Object.entries(screens)) {
   try {
-    const html = renderToStaticMarkup(
-      React.createElement(MemoryRouter, { initialEntries: [route] },
-        React.createElement(AppProviders, null,
-          React.createElement(App))),
-    );
-    if (!html || html.length < 20) throw new Error('empty render');
-    console.log(`  ok   ${route}  (${html.length} bytes)`);
+    const html = renderToString(h(HubProvider, null, h(Sidebar), h(Screen)));
+    if (!html || html.length < 50) throw new Error('suspiciously short output');
+    console.log(`✓ ${name.padEnd(12)} rendered (${html.length} chars)`);
   } catch (err) {
     failures++;
-    console.error(`  FAIL ${route}\n       ${err.message}`);
+    console.error(`✗ ${name} failed:`, err.message);
   }
 }
-console.log(failures ? `\n${failures} route(s) failed to render` : '\nAll routes render cleanly');
-process.exit(failures ? 1 : 0);
+
+try {
+  const html = renderToString(h(HubProvider, null, h(OpenModal), h(ComposerModal)));
+  if (!html.includes('Schedule a post')) throw new Error('composer heading missing');
+  console.log(`✓ ${'Composer'.padEnd(12)} rendered (${html.length} chars)`);
+} catch (err) {
+  failures++;
+  console.error('✗ Composer failed:', err.message);
+}
+
+if (failures) {
+  console.error(`\n${failures} screen(s) failed to render.`);
+  process.exit(1);
+}
+console.log('\nAll screens rendered cleanly.');

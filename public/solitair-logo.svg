@@ -1,0 +1,10 @@
+<svg width="340" height="72" viewBox="0 0 340 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SolitAir">
+  <!-- paper-plane mark -->
+  <path d="M6 36 L54 14 L40 58 L31 44 L6 36 Z" fill="#00FF57"/>
+  <path d="M54 14 L31 44 L31 58 L40 48" fill="#0E1220" fill-opacity="0.28"/>
+  <!-- wordmark -->
+  <text x="72" y="47"
+        font-family="Montserrat, system-ui, sans-serif"
+        font-size="34" font-weight="800" letter-spacing="-0.5"
+        fill="#FFFFFF">Solit<tspan fill="#00FF57">Air</tspan></text>
+</svg>
