@@ -1,4 +1,5 @@
 import { useHub } from '../store.jsx';
+import { AVATARS } from '../constants.js';
 import { Hoverable } from './ui.jsx';
 
 const NAV = [
@@ -68,8 +69,12 @@ const NAV = [
 ];
 
 export default function Sidebar() {
-  const { state, setState, openNewPost } = useHub();
+  const { state, setState, openNewPost, signOut } = useHub();
   const current = state.tab;
+
+  // Signed-in user when wired to Supabase; otherwise the demo persona.
+  const me = state.currentUser || { initials: 'AF', name: 'Afif', role: 'Marketing executive' };
+  const showSignOut = state.backend && state.session;
 
   return (
     <aside
@@ -162,7 +167,7 @@ export default function Sidebar() {
             width: 32,
             height: 32,
             borderRadius: '50%',
-            background: '#1044FF',
+            background: AVATARS[me.initials] || '#1044FF',
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -171,12 +176,28 @@ export default function Sidebar() {
             fontWeight: 700,
           }}
         >
-          AF
+          {me.initials}
         </div>
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Afif</div>
-          <div style={{ fontSize: 10.5, color: '#808080' }}>Marketing executive</div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {me.name}
+          </div>
+          <div style={{ fontSize: 10.5, color: '#808080' }}>{me.role}</div>
         </div>
+        {showSignOut ? (
+          <Hoverable
+            as="span"
+            onClick={signOut}
+            title="Sign out"
+            style={{ cursor: 'pointer', color: '#9AA0AE', flex: 'none', display: 'flex', padding: 4 }}
+            hoverStyle={{ color: '#fff' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 14H3.5A1.5 1.5 0 012 12.5v-9A1.5 1.5 0 013.5 2H6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M10.5 11L14 8l-3.5-3M14 8H6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Hoverable>
+        ) : null}
       </div>
     </aside>
   );

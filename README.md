@@ -11,10 +11,15 @@ caption refinement), and team/notification settings.
 
 **Team:** Nabil (CMO — approver/admin), Afif & Arya (marketing executives — editors).
 
-This repo currently ships **Phase 1**: a pixel-perfect React + Vite recreation of
-the approved design prototype, running entirely on local state (no backend
-required). The Supabase schema and a documented backend seam are in place so
-Phase 2+ can be wired in without touching the UI.
+**Status:** Phase 1 (pixel-perfect UI) is complete, and **Phase 2 (real shared
+data + auth on Supabase)** is wired in behind config. The app runs two ways from
+the same build:
+
+- **Demo mode** (default, zero config) — local seed data, no login. Great for
+  design review and running the tests.
+- **Connected mode** — set two Supabase env vars and the calendar, board, team
+  and composer read/write Postgres, gated by email login. See
+  [`docs/PHASE2_SETUP.md`](docs/PHASE2_SETUP.md).
 
 ---
 
@@ -29,9 +34,14 @@ npm run lint     # ESLint
 npm run smoke    # render every screen through React's server renderer
 ```
 
-No environment variables are needed for Phase 1 — the app runs on the seed data
-in `src/data/`. Copy `.env.example` → `.env.local` when you start wiring Supabase
-and the AI Edge Function.
+No environment variables are needed to run — the app boots in demo mode on the
+seed data in `src/data/`. To switch to connected mode, copy `.env.example` →
+`.env.local`, add your Supabase URL + anon key, and follow
+[`docs/PHASE2_SETUP.md`](docs/PHASE2_SETUP.md).
+
+```bash
+npm run test     # pure row<->model mapper unit tests (backend-free)
+```
 
 ---
 
@@ -81,27 +91,49 @@ src/
   data/
     seed.js           initial posts / team / connections
     analytics.js      per-channel KPI + chart geometry
+  api/
+    mappers.js        pure Supabase row <-> app-model mappers (unit-tested)
+    workspace.js      the one boundary that talks to Supabase (load + writes)
   lib/
+    supabase.js       client, created only when env vars are set
+    auth.js           email/password sign-in wrapper
     ai.js             AI client seam (real Edge Function <-> local fallback)
     media.js          client-side media validation
 supabase/
-  schema.sql          Phase 2 Postgres schema
+  schema.sql          Postgres schema + RLS
+  seed.sql            demo team / posts / connections
 ```
 
 ---
 
-## 🔌 Backend seam (Phase 2+)
+## 🔌 Backend (Phase 2, implemented)
 
-The app is backend-free today but structured to grow into the plan in
-[`docs/BUILD_PLAN.md`](docs/BUILD_PLAN.md):
+Connected mode is live behind config. When `VITE_SUPABASE_URL` +
+`VITE_SUPABASE_ANON_KEY` are set, the store loads the workspace on sign-in and
+writes through on every mutation:
 
-- **Data** — replace the `src/data/` fixtures with Supabase reads/writes against
-  `supabase/schema.sql`. State shapes already match the table columns.
-- **AI** — set `VITE_AI_ENDPOINT` to your deployed `ai` Edge Function. `src/lib/ai.js`
-  will POST `/assistant` and `/refine-caption` instead of using the local fallback.
-  The Anthropic key stays server-side — never in the browser.
-- **Publishing / analytics** — cron Edge Functions (`publisher`, `analytics-sync`,
-  `weekly-digest`) described in the handoff docs.
+| Action | Table |
+| --- | --- |
+| Composer save (draft / review / scheduled) | `posts` insert |
+| Board "Advance →" | `posts.status` update — **approver-gated** on review→scheduled |
+| Connections connect/disconnect | `connections.connected` update |
+| Team invite / remove | `team_members` |
+| Workspace defaults + notification toggles | `workspace_settings` |
+
+The seam is deliberately thin: `src/api/mappers.js` holds the pure row↔model
+translation (with `npm run test` coverage), and `src/api/workspace.js` is the
+only module that imports the Supabase client. Auth is email/password; the
+signed-in email resolves to a `team_members` row for name, avatar and permission.
+
+Full walkthrough: [`docs/PHASE2_SETUP.md`](docs/PHASE2_SETUP.md).
+
+### Still ahead (Phase 3+)
+
+- **AI** — set `VITE_AI_ENDPOINT` to your deployed `ai` Edge Function; `src/lib/ai.js`
+  POSTs `/assistant` and `/refine-caption` instead of the local fallback. The
+  Anthropic key stays server-side.
+- **Publishing / analytics** — real OAuth tokens and cron Edge Functions
+  (`publisher`, `analytics-sync`, `weekly-digest`) per the handoff docs.
 
 Backend jobs, platform API checklist, and the full data model live in
 [`docs/HANDOFF.md`](docs/HANDOFF.md).
@@ -110,10 +142,11 @@ Backend jobs, platform API checklist, and the full data model live in
 
 ## 🧪 Verification
 
-- `npm run build` — 46 modules compile clean.
+- `npm run build` — compiles clean in both demo and connected (env-set) builds.
 - `npm run lint` — clean (one intentional fast-refresh warning on the store).
+- `npm run test` — 10 pure row↔model mapper unit tests pass.
 - `npm run smoke` — every screen + the composer render through React's server
   renderer without crashing.
-- Interactive flows (navigation, composer + AI refine, kanban advance, analytics
-  channel switching, connections toggle, AI chat) were driven end-to-end in a
-  headless browser.
+- Demo-mode flows (navigation, composer save + AI refine, kanban advance,
+  analytics channel switching, connections toggle, AI chat) and the connected-mode
+  **login gate** were driven end-to-end in a headless browser.

@@ -9,9 +9,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "smoke": "vite-node scripts/smoke.mjs"
+    "smoke": "vite-node scripts/smoke.mjs",
+    "test": "vite-node scripts/mappers.test.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

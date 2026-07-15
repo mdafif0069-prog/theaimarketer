@@ -21,7 +21,8 @@ const selectStyle = {
 };
 
 export default function Team() {
-  const { state, setState, invite, removeMember, toggleWsApproval, setWsReminder, toggleNotif } = useHub();
+  const { state, setState, invite, removeMember, toggleWsApproval, setWsReminder, setWsTz, toggleNotif, setNotifChannel } =
+    useHub();
   const { team, inviteEmail, inviteRole, wsApproval, wsReminder, wsTz, notifs, notifChannel } = state;
 
   const notifChannelLabel = notifChannel === 'both' ? 'Email + Slack' : notifChannel === 'slack' ? 'Slack' : 'Email';
@@ -176,7 +177,7 @@ export default function Team() {
             <div style={{ fontSize: 12.5, fontWeight: 700 }}>Timezone</div>
             <div style={{ fontSize: 11, color: '#808080', marginTop: 1 }}>All scheduling and best-time suggestions use this</div>
           </div>
-          <select value={wsTz} onChange={(e) => setState({ wsTz: e.target.value })} style={selectStyle}>
+          <select value={wsTz} onChange={(e) => setWsTz(e.target.value)} style={selectStyle}>
             <option value="Asia/Dubai">Asia/Dubai (GMT+4)</option>
             <option value="Asia/Riyadh">Asia/Riyadh (GMT+3)</option>
             <option value="Europe/London">Europe/London</option>
@@ -206,7 +207,7 @@ export default function Team() {
             <div style={{ fontSize: 12.5, fontWeight: 700 }}>Delivery channel</div>
             <div style={{ fontSize: 11, color: '#808080', marginTop: 1 }}>Where reminders and alerts are sent</div>
           </div>
-          <select value={notifChannel} onChange={(e) => setState({ notifChannel: e.target.value })} style={selectStyle}>
+          <select value={notifChannel} onChange={(e) => setNotifChannel(e.target.value)} style={selectStyle}>
             <option value="email">Email</option>
             <option value="slack">Slack</option>
             <option value="both">Email + Slack</option>
